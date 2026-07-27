@@ -34,7 +34,7 @@ export default function Branches() {
     <section id="branches" className="branches-section">
       <div className="section-header">
         <span className="section-subtitle">Dónde encontrarnos</span>
-        <h2 className="section-title">Nuestras Sucursales</h2>
+        <h2 className="section-title">Nuestra Sucursal</h2>
         <div className="section-divider"></div>
       </div>
 

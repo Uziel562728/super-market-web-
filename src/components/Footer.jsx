@@ -43,7 +43,7 @@ export default function Footer() {
           <ul>
             <li><button onClick={() => scrollToSection('home')} className="footer-link">Inicio</button></li>
             <li><button onClick={() => scrollToSection('catalog')} className="footer-link">Catálogo de Productos</button></li>
-            <li><button onClick={() => scrollToSection('branches')} className="footer-link">Nuestras Sucursales</button></li>
+            <li><button onClick={() => scrollToSection('branches')} className="footer-link">Nuestra Sucursal</button></li>
             <li><button onClick={() => scrollToSection('contact')} className="footer-link">Contacto</button></li>
           </ul>
         </div>
@@ -64,7 +64,7 @@ export default function Footer() {
                 </a>
               </li>
             ))}
-            <li className="footer-text-muted">📍 Sucursales en CABA</li>
+            <li className="footer-text-muted">📍 Sucursal en Flores, CABA</li>
           </ul>
         </div>
       </div>

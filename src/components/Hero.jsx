@@ -45,7 +45,7 @@ export default function Hero() {
               🛒 Ver Productos
             </button>
             <button onClick={() => scrollToSection('branches')} className="btn btn-secondary btn-large">
-              📍 Ver Sucursales
+              📍 Ver Sucursal
             </button>
           </div>
           
@@ -68,7 +68,7 @@ export default function Hero() {
               <span className="feature-icon">📍</span>
               <div className="feature-text">
                 <strong>Cerca Tuyo</strong>
-                <span>5 Sucursales CABA</span>
+                <span>Flores, CABA</span>
               </div>
             </div>
           </div>

@@ -19,7 +19,7 @@ export default function Contact() {
         <div className="contact-info-card">
           <div className="contact-brand-title">SUPER MARKET KOSHER</div>
           <p className="contact-description">
-            ¿Tenés alguna duda o consulta sobre nuestros productos o sucursales? Escribinos directamente por WhatsApp y te responderemos a la brevedad.
+            ¿Tenés alguna duda o consulta sobre nuestros productos o nuestra sucursal? Escribinos directamente por WhatsApp y te responderemos a la brevedad.
           </p>
 
           <div className="contact-methods">
@@ -88,15 +88,15 @@ export default function Contact() {
           <h3>Horarios de Atención</h3>
           <div className="hours-list">
             <div className="hours-item">
-              <span>Lunes a Viernes:</span>
-              <strong>08:30 a 20:30 hs</strong>
+              <span>Lunes a Jueves:</span>
+              <strong>08:00 a 19:30 hs</strong>
             </div>
             <div className={`hours-item ${isShabat ? 'active-shabat-hours' : ''}`}>
               <span>Viernes:</span>
               {isShabat ? (
-                <strong className="shabat-highlight">⚠️ Cierre a las 15:00 hs (Shabat)</strong>
+                <strong className="shabat-highlight">⚠️ 08:00 a 16:00 hs (Cerrado por Shabat)</strong>
               ) : (
-                <strong>Cierre a las 15:00 hs (Shabat)</strong>
+                <strong>08:00 a 16:00 hs</strong>
               )}
             </div>
             <div className="hours-item">
@@ -105,11 +105,11 @@ export default function Contact() {
             </div>
             <div className="hours-item">
               <span>Domingos:</span>
-              <strong>09:00 a 14:00 hs</strong>
+              <strong>08:30 a 14:00 hs</strong>
             </div>
           </div>
           <div className="contact-promo-footer">
-            🏪 ¡Te esperamos en cualquiera de nuestras sucursales en CABA!
+            🏪 ¡Te esperamos en nuestra sucursal de Flores!
           </div>
         </div>
       </div>
