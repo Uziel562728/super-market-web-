@@ -278,6 +278,10 @@ main {
   width: auto;
   display: block;
   margin-bottom: 12px;
+  background-color: white;
+  padding: 4px;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   transition: var(--transition-fast);
 }
 

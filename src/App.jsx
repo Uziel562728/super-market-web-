@@ -3,7 +3,6 @@ import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'r
 import Header from './components/Header';
 import Hero from './components/Hero';
 import ProductGrid from './components/ProductGrid';
-import Branches from './components/Branches';
 import Contact from './components/Contact';
 import WhatsAppButton from './components/WhatsAppButton';
 import Footer from './components/Footer';
@@ -86,10 +85,7 @@ function PublicLayout() {
             onSearchChange={handleSearchChange}
           />
 
-          {/* Stores List & Map */}
-          <Branches />
-
-          {/* Contact Info & direct WhatsApp triggers */}
+          {/* Contact Info, Map, Hours & direct WhatsApp triggers */}
           <Contact />
         </div>
       </main>

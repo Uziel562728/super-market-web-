@@ -45,7 +45,7 @@ export default function Header() {
         <nav className="desktop-nav">
           <button onClick={() => scrollToSection('home')} className="nav-link">Inicio</button>
           <button onClick={() => scrollToSection('catalog')} className="nav-link">Productos</button>
-          <button onClick={() => scrollToSection('branches')} className="nav-link">Sucursal</button>
+          <button onClick={() => scrollToSection('contact')} className="nav-link">Sucursal</button>
           <button onClick={() => scrollToSection('contact')} className="nav-link">Contacto</button>
         </nav>
 
@@ -67,7 +67,7 @@ export default function Header() {
         <div className="mobile-menu-links">
           <button onClick={() => scrollToSection('home')} className="mobile-nav-link">Inicio</button>
           <button onClick={() => scrollToSection('catalog')} className="mobile-nav-link">Productos</button>
-          <button onClick={() => scrollToSection('branches')} className="mobile-nav-link">Sucursal</button>
+          <button onClick={() => scrollToSection('contact')} className="mobile-nav-link">Sucursal</button>
           <button onClick={() => scrollToSection('contact')} className="mobile-nav-link">Contacto</button>
         </div>
       </nav>
