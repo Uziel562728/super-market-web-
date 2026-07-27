@@ -44,33 +44,9 @@ export default function Hero() {
             <button onClick={() => scrollToSection('catalog')} className="btn btn-primary btn-large">
               🛒 Ver Productos
             </button>
-            <button onClick={() => scrollToSection('branches')} className="btn btn-secondary btn-large">
+            <button onClick={() => scrollToSection('contact')} className="btn btn-secondary btn-large">
               📍 Ver Sucursal
             </button>
-          </div>
-          
-          <div className="features-strip">
-            <div className="feature-item">
-              <span className="feature-icon">💰</span>
-              <div className="feature-text">
-                <strong>Super Precios</strong>
-                <span>Ofertas imbatibles</span>
-              </div>
-            </div>
-            <div className="feature-item">
-              <span className="feature-icon">🍎</span>
-              <div className="feature-text">
-                <strong>Máxima Variedad</strong>
-                <span>Miles de productos</span>
-              </div>
-            </div>
-            <div className="feature-item">
-              <span className="feature-icon">📍</span>
-              <div className="feature-text">
-                <strong>Cerca Tuyo</strong>
-                <span>Flores, CABA</span>
-              </div>
-            </div>
           </div>
         </div>
       </div>
