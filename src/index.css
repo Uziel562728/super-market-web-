@@ -267,15 +267,10 @@ main {
   width: auto;
   display: block;
   transition: var(--transition-fast);
-  border-radius: var(--radius-sm);
-  background-color: white;
-  padding: 2px;
-  border: 1px solid var(--border);
 }
 
 .logo-img-nav:hover {
   transform: scale(1.05);
-  box-shadow: var(--shadow-sm);
 }
 
 .logo-img-footer {
@@ -283,16 +278,11 @@ main {
   width: auto;
   display: block;
   margin-bottom: 12px;
-  border-radius: var(--radius-sm);
-  background-color: white;
-  padding: 4px;
-  border: 1px solid rgba(255, 255, 255, 0.15);
   transition: var(--transition-fast);
 }
 
 .logo-img-footer:hover {
   transform: scale(1.05);
-  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1);
 }
 
 .desktop-nav {
