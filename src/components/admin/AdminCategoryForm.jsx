@@ -124,9 +124,10 @@ export default function AdminCategoryForm() {
         hint: err.hint || 'N/A',
         stack: err.stack
       });
+      const detailedError = `${err.message || err} (Código: ${err.code || 'N/A'}, Detalles: ${err.details || 'N/A'}, Hint: ${err.hint || 'N/A'})`;
       setErrorMsg(err.code === '23505' 
         ? 'El slug ya existe. Elige un nombre de categoría diferente o edita el slug.' 
-        : 'Error al guardar la categoría en la base de datos.'
+        : `Error al guardar la categoría: ${detailedError}`
       );
     } finally {
       setLoading(false);

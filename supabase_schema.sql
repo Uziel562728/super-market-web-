@@ -74,23 +74,46 @@ alter table public.products alter column slug set not null;
 alter table public.categories enable row level security;
 alter table public.products enable row level security;
 
--- 5. Set up Row Level Security Policies for Categories
-create policy "Allow public read-only access to active categories" on public.categories
-    for select using (activa = true);
+-- Drop existing policies if they exist to allow clean re-execution
+drop policy if exists "Allow public read-only access to active categories" on public.categories;
+drop policy if exists "Allow admins full management access on categories" on public.categories;
+drop policy if exists "Allow public read access to categories" on public.categories;
+drop policy if exists "Allow authenticated admins to manage categories" on public.categories;
 
-create policy "Allow admins full management access on categories" on public.categories
+drop policy if exists "Allow public read-only access to available products" on public.products;
+drop policy if exists "Allow admins full management access on products" on public.products;
+drop policy if exists "Allow public read access to products" on public.products;
+drop policy if exists "Allow authenticated admins to manage products" on public.products;
+
+-- 5. Set up Row Level Security Policies for Categories
+create policy "Allow public read access to categories" on public.categories
+    for select using (true);
+
+create policy "Allow authenticated admins to manage categories" on public.categories
     for all to authenticated using (true) with check (true);
 
 -- 6. Set up Row Level Security Policies for Products
-create policy "Allow public read-only access to available products" on public.products
-    for select using (disponible = true);
+create policy "Allow public read access to products" on public.products
+    for select using (true);
 
-create policy "Allow admins full management access on products" on public.products
+create policy "Allow authenticated admins to manage products" on public.products
     for all to authenticated using (true) with check (true);
 
 -- 7. Storage Bucket Setup
--- NOTE: Please create a public bucket named 'product-images' inside Supabase dashboard -> Storage.
--- Once created, you can run the following SQL policies:
+-- Enable RLS on storage.objects
+alter table storage.objects enable row level security;
+
+-- Create bucket 'product-images' if it does not exist
+insert into storage.buckets (id, name, public)
+values ('product-images', 'product-images', true)
+on conflict (id) do nothing;
+
+-- Drop existing storage policies if they exist to allow clean re-execution
+drop policy if exists "Allow public read access to product images" on storage.objects;
+drop policy if exists "Allow authenticated admins to manage product images" on storage.objects;
+drop policy if exists "Allow authenticated admins to upload product images" on storage.objects;
+drop policy if exists "Allow authenticated admins to update product images" on storage.objects;
+drop policy if exists "Allow authenticated admins to delete product images" on storage.objects;
 
 -- Allow public read access to product-images
 create policy "Allow public read access to product images" on storage.objects

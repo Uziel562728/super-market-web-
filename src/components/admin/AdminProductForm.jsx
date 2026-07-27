@@ -23,6 +23,7 @@ export default function AdminProductForm() {
   // Images state
   const [imagenPrincipal, setImagenPrincipal] = useState('');
   const [imagenesAdicionales, setImagenesAdicionales] = useState([]);
+  const [uploadedPaths, setUploadedPaths] = useState([]); // Track newly uploaded paths in this session
 
   // UI state
   const [categories, setCategories] = useState([]);
@@ -31,6 +32,31 @@ export default function AdminProductForm() {
   const [uploadingMain, setUploadingMain] = useState(false);
   const [uploadingGallery, setUploadingGallery] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
+
+  // Extract path from public URL
+  const getPathFromUrl = (url) => {
+    if (!url) return null;
+    const parts = url.split('/storage/v1/object/public/product-images/');
+    if (parts.length > 1) {
+      return parts[1];
+    }
+    return null;
+  };
+
+  // Delete file from Supabase Storage
+  const deleteFromStorage = async (path) => {
+    if (!path) return;
+    try {
+      const { error } = await supabase.storage
+        .from('product-images')
+        .remove([path]);
+      if (error) {
+        console.warn('Error al eliminar archivo de Storage:', error);
+      }
+    } catch (err) {
+      console.warn('Excepción al eliminar archivo de Storage:', err);
+    }
+  };
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -132,7 +158,15 @@ export default function AdminProductForm() {
         .from('product-images')
         .getPublicUrl(filePath);
 
+      // If there was already a newly uploaded main image in this session, delete it
+      const oldPath = getPathFromUrl(imagenPrincipal);
+      if (oldPath && uploadedPaths.includes(oldPath)) {
+        await deleteFromStorage(oldPath);
+        setUploadedPaths(prev => prev.filter(p => p !== oldPath));
+      }
+
       setImagenPrincipal(publicUrl);
+      setUploadedPaths(prev => [...prev, filePath]);
     } catch (err) {
       console.error('Error al subir la imagen principal a Supabase Storage:', {
         message: err.message || err,
@@ -141,7 +175,8 @@ export default function AdminProductForm() {
         hint: err.hint || 'N/A',
         stack: err.stack
       });
-      setErrorMsg('Error al subir la imagen principal a la base de datos.');
+      const detailedError = `${err.message || err} (Código: ${err.code || 'N/A'}, Detalles: ${err.details || 'N/A'}, Hint: ${err.hint || 'N/A'})`;
+      setErrorMsg(`Error al subir la imagen principal: ${detailedError}`);
     } finally {
       setUploadingMain(false);
     }
@@ -156,6 +191,7 @@ export default function AdminProductForm() {
     setErrorMsg('');
     try {
       const newUrls = [];
+      const newPaths = [];
 
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
@@ -174,9 +210,11 @@ export default function AdminProductForm() {
           .getPublicUrl(filePath);
 
         newUrls.push(publicUrl);
+        newPaths.push(filePath);
       }
 
       setImagenesAdicionales([...imagenesAdicionales, ...newUrls]);
+      setUploadedPaths(prev => [...prev, ...newPaths]);
     } catch (err) {
       console.error('Error al subir imágenes de galería a Supabase Storage:', {
         message: err.message || err,
@@ -185,17 +223,29 @@ export default function AdminProductForm() {
         hint: err.hint || 'N/A',
         stack: err.stack
       });
-      setErrorMsg('Error al subir una o más imágenes adicionales.');
+      const detailedError = `${err.message || err} (Código: ${err.code || 'N/A'}, Detalles: ${err.details || 'N/A'}, Hint: ${err.hint || 'N/A'})`;
+      setErrorMsg(`Error al subir una o más imágenes adicionales: ${detailedError}`);
     } finally {
       setUploadingGallery(false);
     }
   };
 
-  const removeMainImage = () => {
+  const removeMainImage = async () => {
+    const path = getPathFromUrl(imagenPrincipal);
+    if (path && uploadedPaths.includes(path)) {
+      await deleteFromStorage(path);
+      setUploadedPaths(prev => prev.filter(p => p !== path));
+    }
     setImagenPrincipal('');
   };
 
-  const removeGalleryImage = (indexToRemove) => {
+  const removeGalleryImage = async (indexToRemove) => {
+    const urlToRemove = imagenesAdicionales[indexToRemove];
+    const path = getPathFromUrl(urlToRemove);
+    if (path && uploadedPaths.includes(path)) {
+      await deleteFromStorage(path);
+      setUploadedPaths(prev => prev.filter(p => p !== path));
+    }
     setImagenesAdicionales(imagenesAdicionales.filter((_, idx) => idx !== indexToRemove));
   };
 
@@ -277,9 +327,22 @@ export default function AdminProductForm() {
         hint: err.hint || 'N/A',
         stack: err.stack
       });
+
+      // CLEANUP NEWLY UPLOADED IMAGES ON FAILURE
+      if (uploadedPaths.length > 0) {
+        console.log('Limpiando archivos subidos debido a error en el guardado...', uploadedPaths);
+        for (const path of uploadedPaths) {
+          await deleteFromStorage(path);
+        }
+        setUploadedPaths([]);
+        setImagenPrincipal('');
+        setImagenesAdicionales([]);
+      }
+
+      const detailedError = `${err.message || err} (Código: ${err.code || 'N/A'}, Detalles: ${err.details || 'N/A'}, Hint: ${err.hint || 'N/A'})`;
       setErrorMsg(err.code === '23505'
         ? 'Ya existe otro producto con ese nombre o URL. Cambiá el nombre para generar una URL diferente.'
-        : 'Error al guardar el producto en la base de datos.'
+        : `Error al guardar el producto: ${detailedError}`
       );
     } finally {
       setLoading(false);
