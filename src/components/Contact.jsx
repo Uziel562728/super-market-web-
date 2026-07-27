@@ -49,13 +49,13 @@ export default function Contact() {
 
             <div style={{ marginTop: '8px' }}>
               <a 
-                href={singleBranch.comoLlegarUrl} 
+                href={singleBranch.googleMapsUrl} 
                 target="_blank" 
                 rel="noopener noreferrer" 
                 className="btn btn-secondary btn-small"
                 style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}
               >
-                🚗 Cómo llegar
+                🗺️ Ver en Google Maps
               </a>
             </div>
           </div>
