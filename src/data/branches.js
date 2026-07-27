@@ -1,7 +1,7 @@
 export const branches = [
   {
     id: 'branch-1',
-    nombre: 'BIG SALE – CARACAS 561',
+    nombre: 'SUPER MARKET KOSHER – CARACAS 561',
     direccion: 'Caracas 561, Flores, Ciudad Autónoma de Buenos Aires',
     coordenadas: {
       lat: -34.6230248,
@@ -13,7 +13,7 @@ export const branches = [
   },
   {
     id: 'branch-2',
-    nombre: 'BIG SALE – ONCE (San Luis)',
+    nombre: 'SUPER MARKET KOSHER – ONCE (San Luis)',
     direccion: 'San Luis 2961, Once, Ciudad Autónoma de Buenos Aires',
     coordenadas: {
       lat: -34.5995477,
@@ -24,7 +24,7 @@ export const branches = [
   },
   {
     id: 'branch-3',
-    nombre: 'MEGA BIG SALE – ECUADOR',
+    nombre: 'MEGA SUPER MARKET KOSHER – ECUADOR',
     direccion: 'Ecuador 673, Once, Ciudad Autónoma de Buenos Aires',
     coordenadas: {
       lat: -34.6021789,
@@ -35,7 +35,7 @@ export const branches = [
   },
   {
     id: 'branch-4',
-    nombre: 'BIG SALE – BELGRANO',
+    nombre: 'SUPER MARKET KOSHER – BELGRANO',
     direccion: 'Moldes 2475, C1428 Cdad. Autónoma de Buenos Aires',
     coordenadas: {
       lat: -34.5601861,
@@ -46,7 +46,7 @@ export const branches = [
   },
   {
     id: 'branch-5',
-    nombre: 'BIG SALE KOSHER – PALERMO',
+    nombre: 'SUPER MARKET KOSHER – PALERMO',
     direccion: 'Juan María Gutiérrez 3805, Palermo, Ciudad Autónoma de Buenos Aires',
     isKosher: true,
     coordenadas: {

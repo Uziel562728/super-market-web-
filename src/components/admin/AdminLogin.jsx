@@ -55,7 +55,7 @@ export default function AdminLogin() {
     <div className="admin-login-page">
       <div className="admin-login-card">
         <div className="login-logo-container">
-          <h2>BIG SALE</h2>
+          <h2>SUPER MARKET KOSHER</h2>
           <span>Panel de Control Privado</span>
         </div>
 

@@ -53,7 +53,7 @@ function PublicLayout() {
     <div className="app-container">
       {/* Background Watermark Logo */}
       <div className="bg-watermark">
-        <img src={logoImg} alt="Big Sale Watermark" />
+        <img src={logoImg} alt="Super Market Kosher Watermark" />
       </div>
 
       {/* Global background diagonal animated lines */}

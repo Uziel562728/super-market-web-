@@ -17,7 +17,7 @@ export default function Contact() {
 
       <div className="contact-container">
         <div className="contact-info-card">
-          <div className="contact-brand-title">BIG SALE</div>
+          <div className="contact-brand-title">SUPER MARKET KOSHER</div>
           <p className="contact-description">
             ¿Tenés alguna duda o consulta sobre nuestros productos o sucursales? Escribinos directamente por WhatsApp y te responderemos a la brevedad.
           </p>
@@ -57,7 +57,7 @@ export default function Contact() {
                 <span className="method-icon ig-color">📸</span>
                 <div className="method-details">
                   <strong>Instagram</strong>
-                  <span className="method-placeholder">Próximamente @bigsale.ar</span>
+                  <span className="method-placeholder">Próximamente @supermarketkosher.ar</span>
                 </div>
               </div>
             )}
@@ -66,7 +66,7 @@ export default function Contact() {
               <span className="method-icon mail-color">📧</span>
               <div className="method-details">
                 <strong>Correo Electrónico</strong>
-                <span className="method-placeholder">Próximamente consultas@bigsale.com.ar</span>
+                <span className="method-placeholder">Próximamente consultas@supermarketkosher.com.ar</span>
               </div>
             </div>
           </div>

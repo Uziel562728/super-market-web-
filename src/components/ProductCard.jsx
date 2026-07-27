@@ -31,7 +31,7 @@ export default function ProductCard({ product, categories = [] }) {
 
   // Build WhatsApp text for this specific product
   const defaultWhatsApp = contactConfig.whatsAppNumbers.find(w => w.isDefault) || contactConfig.whatsAppNumbers[0];
-  const queryMessage = `Hola Big Sale, quería consultar por el producto: *${nombre}* (${marca ? `marca ${marca}, ` : ''}Precio: $${precio.toLocaleString('es-AR')}). ¿Tienen disponibilidad?`;
+  const queryMessage = `Hola Super Market Kosher, quería consultar por el producto: *${nombre}* (${marca ? `marca ${marca}, ` : ''}Precio: $${precio.toLocaleString('es-AR')}). ¿Tienen disponibilidad?`;
   const whatsappUrl = getWhatsAppLink(defaultWhatsApp.numberApi, queryMessage);
 
   return (

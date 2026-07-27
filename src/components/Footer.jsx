@@ -26,7 +26,7 @@ export default function Footer() {
         {/* Brand Info */}
         <div className="footer-brand">
           <div className="footer-logo">
-            <img src={logoImg} alt="Big Sale" className="logo-img-footer" />
+            <img src={logoImg} alt="Super Market Kosher" className="logo-img-footer" />
           </div>
           <p className="footer-tagline">
             Tu supermercado de confianza en la Ciudad Autónoma de Buenos Aires. Variedad, calidad y las mejores ofertas cerca tuyo.
@@ -70,7 +70,7 @@ export default function Footer() {
       </div>
 
       <div className="footer-bottom">
-        <p>&copy; {new Date().getFullYear()} Big Sale. Todos los derechos reservados.</p>
+        <p>&copy; {new Date().getFullYear()} Super Market Kosher. Todos los derechos reservados.</p>
       </div>
     </footer>
   );

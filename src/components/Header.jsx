@@ -38,7 +38,7 @@ export default function Header() {
     <header className={`header ${scrolled ? 'header-scrolled' : ''}`}>
       <div className="header-container">
         <a href="#" className="logo-container" onClick={(e) => { e.preventDefault(); scrollToSection('home'); }}>
-          <img src={logoImg} alt="Big Sale" className="logo-img-nav" />
+          <img src={logoImg} alt="Super Market Kosher" className="logo-img-nav" />
         </a>
 
         {/* Desktop Nav */}

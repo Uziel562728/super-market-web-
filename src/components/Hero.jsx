@@ -34,7 +34,7 @@ export default function Hero() {
         <div className="hero-content">
           <div className="hero-logo-slot">
             <div className="hero-logo-wrapper">
-              <img src={logoImg} alt="Big Sale" className="hero-logo-large" />
+              <img src={logoImg} alt="Super Market Kosher" className="hero-logo-large" />
             </div>
           </div>
           <p className="hero-subtitle">

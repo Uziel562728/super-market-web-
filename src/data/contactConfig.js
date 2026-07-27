@@ -5,7 +5,7 @@ export const contactConfig = {
       label: 'WhatsApp Consultas',
       numberDisplay: '+54 11 3421-3919',
       numberApi: '5491134213919', // Properly formatted API number (Argentina country code + 9 + mobile area code + number)
-      defaultMessage: 'Hola Big Sale, quería hacer una consulta.',
+      defaultMessage: 'Hola Super Market Kosher, quería hacer una consulta.',
       isDefault: true
     }
   ],
@@ -14,8 +14,8 @@ export const contactConfig = {
     instagrams: [
       {
         id: 'kosher',
-        label: '@kosherbigsale',
-        url: 'https://www.instagram.com/kosherbigsale/?hl=es',
+        label: '@supermarketkosher',
+        url: 'https://www.instagram.com/supermarketkosher/?hl=es',
         branchId: 'branch-5' // Linked to the Kosher branch
       }
     ],

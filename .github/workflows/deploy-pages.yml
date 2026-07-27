@@ -1,4 +1,4 @@
-name: Deploy Big Sale to GitHub Pages
+name: Deploy Super Market Kosher to GitHub Pages
 
 on:
   push:

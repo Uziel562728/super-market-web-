@@ -19,7 +19,7 @@ export default function AdminDashboard() {
       {/* Admin Sidebar Navigation */}
       <aside className="admin-sidebar">
         <div className="sidebar-brand">
-          <h3>Big Sale</h3>
+          <h3>Super Market Kosher</h3>
           <span>Administración</span>
         </div>
         <nav className="sidebar-nav">

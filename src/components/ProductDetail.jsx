@@ -63,7 +63,7 @@ export default function ProductDetail() {
 
     const defaultWhatsApp = contactConfig.whatsAppNumbers.find((item) => item.isDefault)
       || contactConfig.whatsAppNumbers[0];
-    const message = `Hola Big Sale, quería consultar por el producto: *${product.nombre}*.`;
+    const message = `Hola Super Market Kosher, quería consultar por el producto: *${product.nombre}*.`;
     const whatsappUrl = getWhatsAppLink(defaultWhatsApp.numberApi, message);
     const additionalImages = Array.isArray(product.imagenes_adicionales)
       ? product.imagenes_adicionales
