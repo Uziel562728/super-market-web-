@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import logoImg from '../images/logo_premium sin fondo.png';
+import logoImg from '../images/logo supermarket.webp';
 
 export default function Header() {
   const navigate = useNavigate();

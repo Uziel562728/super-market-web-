@@ -1,5 +1,5 @@
 import React from 'react';
-import logoImg from '../images/logo_premium sin fondo.png';
+import logoImg from '../images/logo supermarket.webp';
 
 export default function Hero() {
   const scrollToSection = (id) => {

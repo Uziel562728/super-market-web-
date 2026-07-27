@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { branches, isKosherClosedForShabat } from '../data/branches';
-import logoImg from '../images/logo_premium sin fondo.png';
+import logoImg from '../images/logo supermarket.webp';
 
 export default function BranchMap({ activeBranchId, onSelectBranch }) {
   const mapContainerRef = useRef(null);

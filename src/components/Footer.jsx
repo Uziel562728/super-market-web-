@@ -1,6 +1,6 @@
 import React from 'react';
 import { contactConfig, getWhatsAppLink } from '../data/contactConfig';
-import logoImg from '../images/logo_premium sin fondo.png';
+import logoImg from '../images/logo supermarket.webp';
 
 export default function Footer() {
   const defaultWhatsApp = contactConfig.whatsAppNumbers.find(w => w.isDefault) || contactConfig.whatsAppNumbers[0];

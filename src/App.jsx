@@ -8,7 +8,7 @@ import Contact from './components/Contact';
 import WhatsAppButton from './components/WhatsAppButton';
 import Footer from './components/Footer';
 import ProductDetail from './components/ProductDetail';
-import logoImg from './images/logo_premium sin fondo.png';
+import logoImg from './images/logo supermarket.webp';
 import './App.css';
 
 // Admin imports
