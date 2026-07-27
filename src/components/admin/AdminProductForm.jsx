@@ -132,7 +132,8 @@ export default function AdminProductForm() {
     if (isEdit) {
       fetchProduct();
     }
-  }, [id, isEdit, categoriaId]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id, isEdit]);
 
   // Upload main image to Supabase Storage
   const handleMainImageUpload = async (e) => {
@@ -304,6 +305,7 @@ export default function AdminProductForm() {
 
     try {
       if (isEdit) {
+        console.log('category_id a guardar:', productPayload.categoria_id);
         const { error } = await supabase
           .from('products')
           .update(productPayload)
