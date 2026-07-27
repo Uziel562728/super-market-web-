@@ -41,10 +41,7 @@ export default function Footer() {
           <p className="footer-tagline">
             Tu supermercado de confianza en la Ciudad Autónoma de Buenos Aires. Variedad, calidad y las mejores ofertas cerca tuyo.
           </p>
-          <div className="footer-whatsapp-badge">
-            <span className="badge-dot"></span>
-            <span>WhatsApp: <strong>{defaultWhatsApp.numberDisplay}</strong></span>
-          </div>
+
         </div>
 
         {/* Quick Links */}
