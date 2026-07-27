@@ -2398,6 +2398,30 @@ main {
 
 /* Mobile Devices (max 768px) */
 @media (max-width: 768px) {
+  .categories-section {
+    padding: 40px 16px;
+  }
+
+  .categories-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+
+  .category-card {
+    padding: 12px 6px;
+    gap: 8px;
+  }
+
+  .category-icon-wrapper {
+    width: 44px;
+    height: 44px;
+    font-size: 1.4rem;
+  }
+
+  .category-name {
+    font-size: 0.78rem;
+  }
+
   .header {
     background-color: rgba(255, 255, 255, 0.96);
   }
@@ -2448,10 +2472,33 @@ main {
     height: 44px;
   }
   
+  .catalog-controls {
+    padding: 16px;
+  }
+
   .category-pills-wrapper {
     flex-direction: column;
     align-items: flex-start;
     gap: 8px;
+    width: 100%;
+  }
+
+  .category-pills {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    width: 100%;
+    overflow-x: visible;
+  }
+
+  .pill-btn {
+    white-space: normal;
+    text-align: center;
+    justify-content: center;
+    padding: 8px 4px;
+    font-size: 0.78rem;
+    width: 100%;
+    box-sizing: border-box;
   }
   
   .extra-filters {
