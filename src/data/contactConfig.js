@@ -3,8 +3,8 @@ export const contactConfig = {
     {
       id: 'main',
       label: 'WhatsApp Consultas',
-      numberDisplay: '+54 11 3421-3919',
-      numberApi: '5491134213919', // Properly formatted API number (Argentina country code + 9 + mobile area code + number)
+      numberDisplay: '+54 9 11 2328 7769',
+      numberApi: '5491123287769', // Properly formatted API number (Argentina country code + 9 + mobile area code + number)
       defaultMessage: 'Hola Super Market Kosher, quería hacer una consulta.',
       isDefault: true
     }
@@ -15,8 +15,8 @@ export const contactConfig = {
       {
         id: 'kosher',
         label: '@supermarketkosher',
-        url: 'https://www.instagram.com/supermarketkosher/?hl=es',
-        branchId: 'branch-5' // Linked to the Kosher branch
+        url: 'https://www.instagram.com/supermarketkosher',
+        branchId: 'branch-1' // Linked to the single branch
       }
     ],
     facebook: '',  // Prepared for future Facebook URL
