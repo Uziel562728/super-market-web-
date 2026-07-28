@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
 import { contactConfig, getWhatsAppLink } from '../data/contactConfig';
 import Header from './Header';
 import Footer from './Footer';
+import { useCart } from '../context/CartContext';
 
 export default function ProductDetail() {
   const { slug } = useParams();
@@ -11,6 +12,17 @@ export default function ProductDetail() {
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const { cart, addToCart, updateQuantity } = useCart();
+  const navigate = useNavigate();
+
+  const handleBack = (e) => {
+    e.preventDefault();
+    if (window.history.length > 1) {
+      navigate(-1);
+    } else {
+      navigate('/');
+    }
+  };
 
   useEffect(() => {
     const loadProduct = async () => {
@@ -65,10 +77,9 @@ export default function ProductDetail() {
       );
     }
 
-    const defaultWhatsApp = contactConfig.whatsAppNumbers.find((item) => item.isDefault)
-      || contactConfig.whatsAppNumbers[0];
-    const message = `Hola Super Market Kosher, quería consultar por el producto: *${product.nombre}*.`;
-    const whatsappUrl = getWhatsAppLink(defaultWhatsApp.numberApi, message);
+
+    const cartItem = cart.find((item) => item.product.id === product.id);
+    const quantity = cartItem ? cartItem.quantity : 0;
     const additionalImages = Array.isArray(product.imagenes_adicionales)
       ? product.imagenes_adicionales
       : [];
@@ -135,7 +146,7 @@ export default function ProductDetail() {
         </div>
 
         <div className="product-detail-info">
-          <Link to="/" className="product-detail-back">← Volver al catálogo</Link>
+          <a href="/" onClick={handleBack} className="product-detail-back">← Volver al catálogo</a>
           <div className="product-detail-tags">
             {product.oferta && <span className="badge-offer">🔥 OFERTA</span>}
             <span className={`detail-stock ${product.disponible ? 'available' : 'unavailable'}`}>
@@ -154,9 +165,44 @@ export default function ProductDetail() {
             <span className="price-current">${Number(product.precio).toLocaleString('es-AR')}</span>
           </div>
           {product.descripcion && <p className="product-detail-description">{product.descripcion}</p>}
-          <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="btn btn-whatsapp btn-large">
-            💬 Consultar por WhatsApp
-          </a>
+          {/* Action Button / Quantity Selector */}
+          <div className="product-detail-action-container">
+            <button
+              type="button"
+              className={`btn btn-primary btn-large btn-detail-add-cart ${quantity > 0 ? 'inactive' : 'active'}`}
+              disabled={!product.disponible}
+              onClick={() => {
+                if (product.disponible) {
+                  addToCart(product);
+                }
+              }}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'inline-block', verticalAlign: 'middle' }}><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+              Agregar al Carrito
+            </button>
+
+            {product.disponible && (
+              <div className={`detail-qty-selector ${quantity > 0 ? 'active' : 'inactive'}`}>
+                <button
+                  type="button"
+                  className="qty-btn"
+                  onClick={() => updateQuantity(product.id, quantity - 1)}
+                  aria-label="Disminuir cantidad"
+                >
+                  -
+                </button>
+                <span className="qty-val">{quantity}</span>
+                <button
+                  type="button"
+                  className="qty-btn"
+                  onClick={() => updateQuantity(product.id, quantity + 1)}
+                  aria-label="Aumentar cantidad"
+                >
+                  +
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </article>
     );

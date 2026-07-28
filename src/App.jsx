@@ -18,6 +18,9 @@ import AdminProductForm from './components/admin/AdminProductForm';
 import AdminCategories from './components/admin/AdminCategories';
 import AdminCategoryForm from './components/admin/AdminCategoryForm';
 import ProtectedRoute from './components/admin/ProtectedRoute';
+import { CartProvider } from './context/CartContext';
+import CartDrawer from './components/CartDrawer';
+import FloatingCartButton from './components/FloatingCartButton';
 
 function PublicLayout() {
   const location = useLocation();
@@ -102,28 +105,32 @@ function PublicLayout() {
 export default function App() {
   return (
     <Router basename={import.meta.env.BASE_URL}>
-      <Routes>
-        {/* Public Website */}
-        <Route path="/" element={<PublicLayout />} />
-        <Route path="/:slug" element={<ProductDetail />} />
+      <CartProvider>
+        <Routes>
+          {/* Public Website */}
+          <Route path="/" element={<PublicLayout />} />
+          <Route path="/:slug" element={<ProductDetail />} />
 
-        {/* Admin Login Route */}
-        <Route path="/admin/login" element={<AdminLogin />} />
+          {/* Admin Login Route */}
+          <Route path="/admin/login" element={<AdminLogin />} />
 
-        {/* Protected Dashboard Routes */}
-        <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>}>
-          <Route index element={<Navigate to="/admin/products" replace />} />
-          <Route path="products" element={<AdminProducts />} />
-          <Route path="products/new" element={<AdminProductForm />} />
-          <Route path="products/edit/:id" element={<AdminProductForm />} />
-          <Route path="categories" element={<AdminCategories />} />
-          <Route path="categories/new" element={<AdminCategoryForm />} />
-          <Route path="categories/edit/:id" element={<AdminCategoryForm />} />
-        </Route>
+          {/* Protected Dashboard Routes */}
+          <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>}>
+            <Route index element={<Navigate to="/admin/products" replace />} />
+            <Route path="products" element={<AdminProducts />} />
+            <Route path="products/new" element={<AdminProductForm />} />
+            <Route path="products/edit/:id" element={<AdminProductForm />} />
+            <Route path="categories" element={<AdminCategories />} />
+            <Route path="categories/new" element={<AdminCategoryForm />} />
+            <Route path="categories/edit/:id" element={<AdminCategoryForm />} />
+          </Route>
 
-        {/* Catch-all Redirect */}
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
+          {/* Catch-all Redirect */}
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+        <CartDrawer />
+        <FloatingCartButton />
+      </CartProvider>
     </Router>
   );
 }

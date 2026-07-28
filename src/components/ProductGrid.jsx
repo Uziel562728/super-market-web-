@@ -58,6 +58,27 @@ export default function ProductGrid({
     loadCatalog();
   }, []);
 
+  useEffect(() => {
+    if (loading || productsList.length === 0) return;
+
+    const lastViewedId = sessionStorage.getItem('last_viewed_product_id');
+    if (lastViewedId) {
+      const timer = setTimeout(() => {
+        const element = document.getElementById(`product-card-${lastViewedId}`);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          element.classList.add('product-card-highlighted');
+          setTimeout(() => {
+            element.classList.remove('product-card-highlighted');
+          }, 2000);
+        }
+        sessionStorage.removeItem('last_viewed_product_id');
+      }, 150);
+
+      return () => clearTimeout(timer);
+    }
+  }, [loading, productsList]);
+
   // Filter and sort products
   const filteredProducts = useMemo(() => {
     let result = [...productsList];

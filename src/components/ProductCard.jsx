@@ -1,9 +1,12 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { contactConfig, getWhatsAppLink } from '../data/contactConfig';
+import { useCart } from '../context/CartContext';
 
 export default function ProductCard({ product, categories = [] }) {
   const navigate = useNavigate();
+  const { cart, addToCart, updateQuantity } = useCart();
+  const cartItem = cart.find((item) => item.product.id === product.id);
+  const quantity = cartItem ? cartItem.quantity : 0;
   const {
     nombre,
     precio,
@@ -17,7 +20,10 @@ export default function ProductCard({ product, categories = [] }) {
   } = product;
 
   const openProduct = () => {
-    if (product.slug) navigate(`/${product.slug}`);
+    if (product.slug) {
+      sessionStorage.setItem('last_viewed_product_id', product.id);
+      navigate(`/${product.slug}`);
+    }
   };
 
   // Find category name
@@ -29,13 +35,11 @@ export default function ProductCard({ product, categories = [] }) {
     ? Math.round(((precio_anterior - precio) / precio_anterior) * 100)
     : 0;
 
-  // Build WhatsApp text for this specific product
-  const defaultWhatsApp = contactConfig.whatsAppNumbers.find(w => w.isDefault) || contactConfig.whatsAppNumbers[0];
-  const queryMessage = `Hola Super Market Kosher, quería consultar por el producto: *${nombre}* (${marca ? `marca ${marca}, ` : ''}Precio: $${precio.toLocaleString('es-AR')}). ¿Tienen disponibilidad?`;
-  const whatsappUrl = getWhatsAppLink(defaultWhatsApp.numberApi, queryMessage);
+
 
   return (
     <div
+      id={`product-card-${product.id}`}
       className={`product-card ${product.slug ? 'product-card-clickable' : ''} ${oferta ? 'product-on-sale' : ''} ${!disponible ? 'product-out-of-stock' : ''}`}
       onClick={openProduct}
       onKeyDown={(e) => {
@@ -82,18 +86,45 @@ export default function ProductCard({ product, categories = [] }) {
           <span className="price-current">${precio.toLocaleString('es-AR')}</span>
         </div>
 
-        {/* Action Button */}
-        <a
-          href={whatsappUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="btn-product-whatsapp"
-          onClick={(e) => e.stopPropagation()}
-        >
-          <span className="ws-icon">💬</span>
-          <span className="stock-label-full">Consultar Stock</span>
-          <span className="stock-label-mobile">Consultar</span>
-        </a>
+        {/* Action Button / Quantity Selector */}
+        <div className="product-card-action-container" onClick={(e) => e.stopPropagation()}>
+          <button
+            type="button"
+            className={`btn-product-add-cart ${!disponible ? 'disabled' : ''} ${quantity > 0 ? 'inactive' : 'active'}`}
+            disabled={!disponible}
+            onClick={() => {
+              if (disponible) {
+                addToCart(product);
+              }
+            }}
+          >
+            <svg className="cart-btn-icon-svg" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'inline-block', verticalAlign: 'middle' }}><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+            <span className="cart-label-full">{disponible ? 'Agregar al Carrito' : 'Sin Stock'}</span>
+            <span className="cart-label-mobile">{disponible ? 'Agregar' : 'Sin Stock'}</span>
+          </button>
+
+          {disponible && (
+            <div className={`card-qty-selector ${quantity > 0 ? 'active' : 'inactive'}`}>
+              <button
+                type="button"
+                className="qty-btn"
+                onClick={() => updateQuantity(product.id, quantity - 1)}
+                aria-label="Disminuir cantidad"
+              >
+                -
+              </button>
+              <span className="qty-val">{quantity}</span>
+              <button
+                type="button"
+                className="qty-btn"
+                onClick={() => updateQuantity(product.id, quantity + 1)}
+                aria-label="Aumentar cantidad"
+              >
+                +
+              </button>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

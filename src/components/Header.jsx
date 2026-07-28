@@ -49,6 +49,7 @@ export default function Header() {
           <button onClick={() => scrollToSection('contact')} className="nav-link">Contacto</button>
         </nav>
 
+
         {/* Mobile Hamburger Toggle */}
         <button 
           className={`hamburger-toggle ${mobileMenuOpen ? 'open' : ''}`} 

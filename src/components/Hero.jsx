@@ -37,15 +37,12 @@ export default function Hero() {
               <img src={logoImg} alt="Super Market Kosher" className="hero-logo-large" />
             </div>
           </div>
-          <p className="hero-subtitle">
-            El catálogo más completo con la mayor variedad de productos y los mejores precios del mercado. ¡Encontrá lo que buscás al precio que querés!
-          </p>
           <div className="hero-actions">
             <button onClick={() => scrollToSection('catalog')} className="btn btn-primary btn-large">
-              🛒 Ver Productos
+              Ver Productos
             </button>
             <button onClick={() => scrollToSection('contact')} className="btn btn-secondary btn-large">
-              📍 Ver Sucursal
+              Ver Sucursal
             </button>
           </div>
         </div>
