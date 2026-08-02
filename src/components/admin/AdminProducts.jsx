@@ -169,7 +169,7 @@ export default function AdminProducts() {
             ) : (
               filteredProducts.map((prod) => (
                 <tr key={prod.id}>
-                  <td>
+                  <td data-label="Imagen">
                     <div className="table-img-wrapper">
                       {prod.imagen_principal ? (
                         <img src={prod.imagen_principal} alt={prod.nombre} />
@@ -178,14 +178,14 @@ export default function AdminProducts() {
                       )}
                     </div>
                   </td>
-                  <td>
+                  <td data-label="Nombre">
                     <div className="table-product-name">
                       <strong>{prod.nombre}</strong>
                       {prod.marca && <span className="product-brand-tag">{prod.marca}</span>}
                     </div>
                   </td>
-                  <td>{categoryMap[prod.categoria_id] || 'Sin categoría'}</td>
-                  <td>
+                  <td data-label="Categoría">{categoryMap[prod.categoria_id] || 'Sin categoría'}</td>
+                  <td data-label="Precio">
                     <div className="table-prices">
                       <span className="price-tag">${prod.precio}</span>
                       {prod.precio_anterior && (
@@ -193,14 +193,14 @@ export default function AdminProducts() {
                       )}
                     </div>
                   </td>
-                  <td>
+                  <td data-label="Estado">
                     <span className={`status-badge ${prod.disponible ? 'status-active' : 'status-inactive'}`}>
                       {prod.disponible ? 'Disponible' : 'Sin Stock'}
                     </span>
                   </td>
-                  <td>{prod.destacado ? '⭐ Sí' : 'No'}</td>
-                  <td>{prod.oferta ? '🏷️ Sí' : 'No'}</td>
-                  <td>
+                  <td data-label="Destacado">{prod.destacado ? '⭐ Sí' : 'No'}</td>
+                  <td data-label="Oferta">{prod.oferta ? '🏷️ Sí' : 'No'}</td>
+                  <td data-label="Acciones">
                     <div className="table-actions">
                       <button
                         onClick={() => navigate(`/admin/products/edit/${prod.id}`)}

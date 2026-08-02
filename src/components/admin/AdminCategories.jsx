@@ -111,20 +111,20 @@ export default function AdminCategories() {
             ) : (
               categories.map((cat) => (
                 <tr key={cat.id}>
-                  <td>
+                  <td data-label="Nombre">
                     <strong>{cat.nombre}</strong>
                     {cat.descripcion && (
                       <p className="table-row-desc">{cat.descripcion}</p>
                     )}
                   </td>
-                  <td><code>{cat.slug}</code></td>
-                  <td>{cat.orden}</td>
-                  <td>
+                  <td data-label="Slug"><code>{cat.slug}</code></td>
+                  <td data-label="Orden">{cat.orden}</td>
+                  <td data-label="Estado">
                     <span className={`status-badge ${cat.activa ? 'status-active' : 'status-inactive'}`}>
                       {cat.activa ? 'Activa' : 'Inactiva'}
                     </span>
                   </td>
-                  <td>
+                  <td data-label="Acciones">
                     <div className="table-actions">
                       <button
                         onClick={() => navigate(`/admin/categories/edit/${cat.id}`)}

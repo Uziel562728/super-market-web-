@@ -3650,6 +3650,12 @@ main {
   justify-content: flex-end;
 }
 
+/* Mobile Admin Hidden Elements on Desktop */
+.admin-mobile-header,
+.admin-mobile-bottom-nav {
+  display: none;
+}
+
 /* Responsiveness for admin dashboard */
 @media (max-width: 991px) {
   .admin-form-grid {
@@ -3658,35 +3664,416 @@ main {
 }
 
 @media (max-width: 768px) {
+  /* Global Dashboard Restructuring for Mobile */
   .admin-dashboard-layout {
     flex-direction: column;
+    padding-top: 60px;
+    padding-bottom: 75px;
+    background-color: #f8fafc;
+    min-height: 100vh;
   }
+
   .admin-sidebar {
+    display: none !important; /* Hide sidebar completely */
+  }
+
+  .admin-content-header {
+    display: none !important; /* Hide redundant page header */
+  }
+
+  .admin-page-content {
+    padding: 16px 12px;
+  }
+
+  /* Mobile Top Header Navigation */
+  .admin-mobile-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #0f172a;
+    color: white;
+    padding: 0 16px;
+    height: 60px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1001;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .mobile-brand h3 {
+    margin: 0;
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: var(--primary);
+    line-height: 1.2;
+  }
+
+  .mobile-brand span {
+    font-size: 0.7rem;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .mobile-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .mobile-header-btn {
+    border: none;
+    border-radius: var(--radius-sm);
+    font-family: inherit;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .btn-view-site-mobile {
+    background-color: rgba(255, 255, 255, 0.08);
+    color: #f1f5f9;
+    padding: 6px 12px;
+    font-size: 0.8rem;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+  }
+
+  .btn-view-site-mobile:hover {
+    background-color: rgba(255, 255, 255, 0.15);
+  }
+
+  .btn-logout-mobile {
+    background-color: rgba(239, 68, 68, 0.15);
+    color: #fca5a5;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    width: 32px;
+    height: 32px;
+    font-size: 0.95rem;
+    border-radius: 50%;
+  }
+
+  .btn-logout-mobile:hover {
+    background-color: #ef4444;
+    color: white;
+  }
+
+  /* Mobile Bottom Navigation Bar */
+  .admin-mobile-bottom-nav {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    background-color: white;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 65px;
+    z-index: 1001;
+    border-top: 1px solid #e2e8f0;
+    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.05);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  .mobile-nav-link {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    color: #64748b;
+    font-size: 0.72rem;
+    font-weight: 700;
+    flex: 1;
+    height: 100%;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    gap: 2px;
+  }
+
+  .mobile-nav-icon {
+    font-size: 1.35rem;
+    transition: transform 0.2s ease;
+  }
+
+  .mobile-nav-link:hover {
+    color: #1e293b;
+  }
+
+  .mobile-nav-link.active {
+    color: var(--primary);
+  }
+
+  .mobile-nav-link.active .mobile-nav-icon {
+    transform: scale(1.15) translateY(-2px);
+  }
+
+  /* Card Layout transformation for Tables */
+  .table-responsive, .orders-table-wrapper {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    overflow-x: visible;
+  }
+
+  .admin-table, .admin-orders-table {
+    display: block;
+    width: 100%;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+  }
+
+  .admin-table thead, .admin-orders-table thead {
+    display: none; /* Hide headers */
+  }
+
+  .admin-table tbody, .admin-orders-table tbody {
+    display: block;
     width: 100%;
   }
-  .sidebar-nav {
-    flex-direction: row;
-    flex-wrap: wrap;
-    padding: 12px;
-    gap: 4px;
+
+  .admin-table tr, .admin-orders-table tr {
+    display: block;
+    background-color: white;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid #e2e8f0;
+    margin-bottom: 16px;
+    padding: 16px;
+    transition: all 0.2s ease;
+    border-left: 4px solid #cbd5e1;
   }
-  .sidebar-link {
-    padding: 8px 12px;
-    font-size: 0.85rem;
+
+  /* Row status borders */
+  .admin-orders-table tr.order-row {
+    border-left-color: #cbd5e1;
   }
-  .sidebar-footer {
-    flex-direction: row;
-    padding: 12px;
+  .admin-orders-table tr.order-row.row-new-highlight {
+    border-left-color: #f59e0b; /* Yellow for new */
   }
-  .admin-content-header {
-    padding: 15px 20px;
+  .admin-orders-table tr.order-row.row-expanded {
+    border-left-color: var(--primary);
+    box-shadow: var(--shadow-md);
   }
-  .admin-page-content {
-    padding: 20px;
+
+  /* td converted to flex rows */
+  .admin-table td, .admin-orders-table td {
+    display: flex !important;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0 !important;
+    border-bottom: 1px solid #f1f5f9;
+    text-align: right;
+    width: 100% !important;
+    font-size: 0.9rem;
+    min-height: 40px;
   }
-  .admin-filters-bar {
+
+  .admin-table td:last-child, .admin-orders-table td:last-child {
+    border-bottom: none;
+    padding-bottom: 0 !important;
+  }
+
+  /* data-label prefix injection */
+  .admin-table td::before, .admin-orders-table td::before {
+    content: attr(data-label);
+    font-weight: 700;
+    color: #64748b;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    text-align: left;
+    margin-right: 12px;
+  }
+
+  /* Adjust actions cell */
+  .col-actions, .actions-column {
+    justify-content: space-between !important;
+    padding-top: 12px !important;
+    margin-top: 4px;
+    border-top: 1px dashed #e2e8f0;
+  }
+
+  .col-actions::before, .actions-column::before {
+    margin-right: 0;
+  }
+
+  .action-buttons-group, .table-actions {
+    width: auto;
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+  }
+
+  /* Filters, Search & Action Headers optimization */
+  .admin-filters-bar, .admin-orders-filters-bar {
+    flex-direction: column !important;
+    gap: 12px !important;
+    padding: 14px !important;
+    background-color: white;
+    border: 1px solid #e2e8f0;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .filter-group {
+    width: 100% !important;
+    min-width: 100% !important;
+  }
+
+  .view-action-header {
     flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    text-align: center;
+  }
+
+  .view-action-header h3 {
+    font-size: 1.15rem;
+    margin-bottom: 4px;
+  }
+
+  .btn-add {
+    width: 100%;
+    justify-content: center;
     padding: 12px;
+  }
+
+  /* Stats summary cards grid */
+  .admin-orders-stats {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 10px !important;
+  }
+
+  .stat-card {
+    padding: 12px !important;
+    gap: 8px !important;
+    border-radius: var(--radius-md) !important;
+  }
+
+  .stat-icon {
+    font-size: 1.4rem !important;
+    width: 36px !important;
+    height: 36px !important;
+    padding: 4px !important;
+  }
+
+  .stat-info h4 {
+    font-size: 0.7rem !important;
+    margin-bottom: 2px !important;
+  }
+
+  .stat-val {
+    font-size: 1.15rem !important;
+  }
+
+  /* Expandable Order Details styling on mobile */
+  .order-details-expanded-container {
+    padding: 12px 6px !important;
+  }
+
+  .details-grid {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+
+  .details-info-box, .details-products-box {
+    padding: 12px !important;
+    border-radius: var(--radius-md);
+  }
+
+  /* Products list inside orders table converted to mobile cards */
+  .details-products-table {
+    display: block;
+    width: 100%;
+  }
+
+  .details-products-table thead {
+    display: none;
+  }
+
+  .details-products-table tbody {
+    display: block;
+    width: 100%;
+  }
+
+  .details-products-table tr {
+    display: block;
+    border: 1px solid #f1f5f9;
+    background-color: #f8fafc;
+    border-radius: var(--radius-md);
+    padding: 8px 12px;
+    margin-bottom: 8px;
+    border-left: 3px solid #cbd5e1;
+  }
+
+  .details-products-table tr.row-summary-prices {
+    display: flex;
+    justify-content: space-between;
+    background-color: transparent;
+    border: none;
+    padding: 6px 0;
+    margin-bottom: 0;
+    border-radius: 0;
+  }
+
+  .details-products-table tr.row-summary-prices.total-row {
+    border-top: 1px solid #e2e8f0;
+    margin-top: 4px;
+    padding-top: 8px;
+  }
+
+  .details-products-table tr.row-summary-prices td {
+    display: inline-block;
+    padding: 0 !important;
+    width: auto !important;
+    border: none;
+    min-height: auto;
+  }
+
+  .details-products-table tr.row-summary-prices td::before {
+    display: none !important; /* Hide labels for summary rows */
+  }
+
+  .details-products-table tr:not(.row-summary-prices) td {
+    display: flex !important;
+    justify-content: space-between;
+    align-items: center;
+    padding: 4px 0 !important;
+    border-bottom: none;
+    text-align: right;
+    width: 100% !important;
+    min-height: auto;
+  }
+
+  /* Inject mobile labels for product rows in order details */
+  .details-products-table tr:not(.row-summary-prices) td:nth-child(1)::before { content: "Producto:"; font-weight: 700; color: #64748b; font-size: 0.72rem; }
+  .details-products-table tr:not(.row-summary-prices) td:nth-child(2)::before { content: "Marca:"; font-weight: 700; color: #64748b; font-size: 0.72rem; }
+  .details-products-table tr:not(.row-summary-prices) td:nth-child(3)::before { content: "Cantidad:"; font-weight: 700; color: #64748b; font-size: 0.72rem; }
+  .details-products-table tr:not(.row-summary-prices) td:nth-child(4)::before { content: "Precio Unit:"; font-weight: 700; color: #64748b; font-size: 0.72rem; }
+  .details-products-table tr:not(.row-summary-prices) td:nth-child(5)::before { content: "Subtotal:"; font-weight: 700; color: #64748b; font-size: 0.72rem; }
+
+  /* Forms view in mobile */
+  .admin-form-view {
+    padding: 16px !important;
+  }
+  
+  .form-row-two {
+    grid-template-columns: 1fr !important;
+    gap: 12px;
+  }
+  
+  .form-submit-row {
+    flex-direction: column-reverse;
+    gap: 8px;
+  }
+  
+  .form-submit-row button {
+    width: 100%;
+    margin: 0 !important;
   }
 }
 

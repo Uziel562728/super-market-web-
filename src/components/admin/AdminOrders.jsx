@@ -411,33 +411,33 @@ export default function AdminOrders() {
                       onClick={() => toggleExpand(order.id)}
                       style={{ cursor: 'pointer' }}
                     >
-                      <td className="col-order-number">
+                      <td data-label="Nro. Pedido" className="col-order-number">
                         <div className="order-number-badge-wrapper">
                           <strong>#{order.order_number}</strong>
                           {isNew && <span className="pulsing-new-badge">NUEVO</span>}
                         </div>
                       </td>
-                      <td className="col-customer">
+                      <td data-label="Cliente" className="col-customer">
                         <div className="customer-info-cell">
                           <span className="customer-name">{order.customer_name}</span>
                           <span className="customer-phone">{order.customer_phone}</span>
                         </div>
                       </td>
-                      <td>{formatDate(order.created_at)}</td>
-                      <td className="col-shipping">
+                      <td data-label="Fecha">{formatDate(order.created_at)}</td>
+                      <td data-label="Entrega" className="col-shipping">
                         <span className={`shipping-type-tag ${order.shipping_method}`}>
                           {order.shipping_method === 'envio' ? '🚀 Envío' : '🏪 Retiro'}
                         </span>
                       </td>
-                      <td className="col-total">
+                      <td data-label="Total" className="col-total">
                         <strong>${Number(order.total).toLocaleString('es-AR')}</strong>
                       </td>
-                      <td>
+                      <td data-label="Estado">
                         <span className={`badge-status ${getStatusBadgeClass(order.status)}`}>
                           {getStatusLabel(order.status)}
                         </span>
                       </td>
-                      <td className="col-actions" onClick={(e) => e.stopPropagation()}>
+                      <td data-label="Acciones" className="col-actions" onClick={(e) => e.stopPropagation()}>
                         <div className="action-buttons-group">
                           {order.status === 'pending' ? (
                             <div className="quick-action-btns">

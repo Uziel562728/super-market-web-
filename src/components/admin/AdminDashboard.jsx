@@ -16,7 +16,23 @@ export default function AdminDashboard() {
 
   return (
     <div className="admin-dashboard-layout">
-      {/* Admin Sidebar Navigation */}
+      {/* Mobile Top Header (only visible on mobile via CSS) */}
+      <header className="admin-mobile-header">
+        <div className="mobile-brand">
+          <h3>Super Market Kosher</h3>
+          <span>Admin</span>
+        </div>
+        <div className="mobile-header-actions">
+          <button onClick={() => navigate('/')} className="mobile-header-btn btn-view-site-mobile" title="Ir al Sitio Público">
+            🌐 Ir al Sitio
+          </button>
+          <button onClick={handleLogout} className="mobile-header-btn btn-logout-mobile" title="Cerrar Sesión">
+            🚪
+          </button>
+        </div>
+      </header>
+
+      {/* Admin Sidebar Navigation (visible on desktop, hidden on mobile) */}
       <aside className="admin-sidebar">
         <div className="sidebar-brand">
           <h3>Super Market Kosher</h3>
@@ -68,6 +84,38 @@ export default function AdminDashboard() {
           <Outlet />
         </div>
       </main>
+
+      {/* Mobile Bottom Navigation Bar (only visible on mobile via CSS) */}
+      <nav className="admin-mobile-bottom-nav">
+        <NavLink 
+          to="/admin/orders" 
+          className={({ isActive }) => `mobile-nav-link ${isActive ? 'active' : ''}`}
+        >
+          <span className="mobile-nav-icon">📋</span>
+          <span className="mobile-nav-label">Pedidos</span>
+        </NavLink>
+        <NavLink 
+          to="/admin/products" 
+          className={({ isActive }) => `mobile-nav-link ${isActive ? 'active' : ''}`}
+        >
+          <span className="mobile-nav-icon">📦</span>
+          <span className="mobile-nav-label">Productos</span>
+        </NavLink>
+        <NavLink 
+          to="/admin/categories" 
+          className={({ isActive }) => `mobile-nav-link ${isActive ? 'active' : ''}`}
+        >
+          <span className="mobile-nav-icon">🏷️</span>
+          <span className="mobile-nav-label">Categorías</span>
+        </NavLink>
+        <NavLink 
+          to="/admin/push-notifications" 
+          className={({ isActive }) => `mobile-nav-link ${isActive ? 'active' : ''}`}
+        >
+          <span className="mobile-nav-icon">🔔</span>
+          <span className="mobile-nav-label">Notif.</span>
+        </NavLink>
+      </nav>
     </div>
   );
 }
