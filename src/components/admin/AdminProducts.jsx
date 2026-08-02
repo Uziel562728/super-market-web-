@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../supabaseClient';
+import { clearCachedCatalog } from '../../lib/catalogCache';
 
 export default function AdminProducts() {
   const [products, setProducts] = useState([]);
@@ -64,6 +65,7 @@ export default function AdminProducts() {
         .eq('id', id);
 
       if (error) throw error;
+      clearCachedCatalog();
       setProducts(products.filter(p => p.id !== id));
     } catch (err) {
       console.error('Error al eliminar el producto de Supabase:', {

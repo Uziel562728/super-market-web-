@@ -4,6 +4,7 @@ import { categories as staticCategories } from '../data/categories';
 import ProductCard from './ProductCard';
 import ProductSearch from './ProductSearch';
 import ProductFilters from './ProductFilters';
+import { getCachedCatalog, setCachedCatalog } from '../lib/catalogCache';
 
 export default function ProductGrid({ 
   selectedCategory, 
@@ -19,6 +20,15 @@ export default function ProductGrid({
 
   useEffect(() => {
     async function loadCatalog() {
+      // Check cache first
+      const cached = getCachedCatalog();
+      if (cached) {
+        setProductsList(cached.products);
+        setCategoriesList(cached.categories);
+        setLoading(false);
+        return;
+      }
+
       try {
         // 1. Fetch active categories from Supabase
         const { data: catData, error: catError } = await supabase
@@ -38,14 +48,14 @@ export default function ProductGrid({
 
         if (prodError) throw prodError;
 
-        // Categories keep a local fallback, but products come only from Supabase.
-        if (catData && catData.length > 0) {
-          setCategoriesList(catData);
-        } else {
-          setCategoriesList(staticCategories);
-        }
+        const finalCategories = (catData && catData.length > 0) ? catData : staticCategories;
+        const finalProducts = prodData || [];
 
-        setProductsList(prodData || []);
+        // Save to cache
+        setCachedCatalog(finalProducts, finalCategories);
+
+        setCategoriesList(finalCategories);
+        setProductsList(finalProducts);
       } catch (err) {
         console.warn('Supabase catalog loading failed:', err);
         setCategoriesList(staticCategories);

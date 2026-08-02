@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../supabaseClient';
+import { clearCachedCatalog } from '../../lib/catalogCache';
 
 export default function AdminCategories() {
   const [categories, setCategories] = useState([]);
@@ -51,6 +52,7 @@ export default function AdminCategories() {
         .eq('id', id);
 
       if (error) throw error;
+      clearCachedCatalog();
       setCategories(categories.filter(c => c.id !== id));
     } catch (err) {
       console.error('Error al eliminar la categoría de Supabase:', {

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { supabase } from '../../supabaseClient';
 import { categories as staticCategories } from '../../data/categories';
+import { clearCachedCatalog } from '../../lib/catalogCache';
 
 export default function AdminProductForm() {
   const { id } = useParams(); // If present, we are in Edit mode
@@ -320,6 +321,7 @@ export default function AdminProductForm() {
         if (error) throw error;
       }
 
+      clearCachedCatalog();
       navigate('/admin/products');
     } catch (err) {
       console.error('Error al guardar el producto en Supabase:', {

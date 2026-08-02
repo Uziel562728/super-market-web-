@@ -4,6 +4,7 @@ import { supabase } from '../supabaseClient';
 import Header from './Header';
 import Footer from './Footer';
 import { useCart } from '../context/CartContext';
+import { getCachedCatalog } from '../lib/catalogCache';
 
 export default function ProductDetail() {
   const { slug } = useParams();
@@ -28,6 +29,27 @@ export default function ProductDetail() {
       setLoading(true);
       setNotFound(false);
       window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+
+      // Check cache first
+      const cached = getCachedCatalog();
+      if (cached) {
+        const cachedProd = cached.products.find(p => p.slug === slug);
+        if (cachedProd) {
+          const cat = cached.categories.find(c => c.id === cachedProd.categoria_id);
+          const formattedProduct = {
+            ...cachedProd,
+            categories: cat ? { nombre: cat.nombre } : null
+          };
+          setProduct(formattedProduct);
+          setActiveImageIndex(0);
+          setLoading(false);
+          // Scroll to top once state updates
+          setTimeout(() => {
+            window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+          }, 0);
+          return;
+        }
+      }
 
       const { data, error } = await supabase
         .from('products')
@@ -107,12 +129,14 @@ export default function ProductDetail() {
                     ‹
                   </button>
                 )}
-              <img
-                  key={`${gallery[activeImageIndex]}-${activeImageIndex}`}
-                  src={gallery[activeImageIndex]}
-                  alt={`${product.nombre} - imagen ${activeImageIndex + 1}`}
-                  className="product-carousel-image"
-              />
+                {gallery.map((image, index) => (
+                  <img
+                    key={`${image}-${index}`}
+                    src={image}
+                    alt={`${product.nombre} - imagen ${index + 1}`}
+                    className={`product-carousel-image ${index === activeImageIndex ? 'active' : ''}`}
+                  />
+                ))}
                 {hasMultipleImages && (
                   <button
                     type="button"

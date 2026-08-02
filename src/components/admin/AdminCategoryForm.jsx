@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { supabase } from '../../supabaseClient';
+import { clearCachedCatalog } from '../../lib/catalogCache';
 
 export default function AdminCategoryForm() {
   const { id } = useParams();
@@ -115,6 +116,7 @@ export default function AdminCategoryForm() {
         if (error) throw error;
       }
 
+      clearCachedCatalog();
       navigate('/admin/categories');
     } catch (err) {
       console.error('Error al guardar la categoría en Supabase:', {
