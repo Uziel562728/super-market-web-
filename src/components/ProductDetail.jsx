@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
-import { contactConfig, getWhatsAppLink } from '../data/contactConfig';
 import Header from './Header';
 import Footer from './Footer';
 import { useCart } from '../context/CartContext';

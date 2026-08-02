@@ -26,3 +26,5 @@ desktop.ini
 *.njsproj
 *.sln
 *.sw?
+
+supabase/functions/.env.production

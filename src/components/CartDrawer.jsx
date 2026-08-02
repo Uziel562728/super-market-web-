@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
-import { contactConfig, getWhatsAppLink } from '../data/contactConfig';
+import { supabase } from '../supabaseClient';
 
 export default function CartDrawer() {
   const {
@@ -26,9 +26,24 @@ export default function CartDrawer() {
   const [dept, setDept] = useState('');
   const [errors, setErrors] = useState({});
 
+  // Abuse protection & state management
+  const [website, setWebsite] = useState(''); // Honeypot
+  const [idempotencyKey, setIdempotencyKey] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState(null);
+  const [orderResult, setOrderResult] = useState(null);
+
   // Animation states
   const [removingItems, setRemovingItems] = useState([]);
   const [isClearingAll, setIsClearingAll] = useState(false);
+
+  // Generate idempotency key on mount / when cart is opened
+  useEffect(() => {
+    if (isCartOpen && !idempotencyKey) {
+      const key = crypto.randomUUID ? crypto.randomUUID() : 'idemp-' + Math.random().toString(36).substring(2, 11) + '-' + Date.now();
+      setIdempotencyKey(key);
+    }
+  }, [isCartOpen, idempotencyKey]);
 
   const handleUpdateQuantity = (productId, newQty) => {
     if (newQty <= 0) {
@@ -61,12 +76,26 @@ export default function CartDrawer() {
 
   const handleClose = () => {
     setIsCartOpen(false);
+    if (orderResult) {
+      setTimeout(() => {
+        setOrderResult(null);
+      }, 300);
+    }
   };
 
   const validateForm = () => {
     const tempErrors = {};
     if (!name.trim()) tempErrors.name = 'El nombre es obligatorio';
-    if (!phone.trim()) tempErrors.phone = 'El teléfono es obligatorio';
+    
+    const phoneTrimmed = phone.trim();
+    if (!phoneTrimmed) {
+      tempErrors.phone = 'El teléfono es obligatorio';
+    } else {
+      const phoneRegex = /^[0-9+\s\-()]{6,25}$/;
+      if (!phoneRegex.test(phoneTrimmed)) {
+        tempErrors.phone = 'Formato de teléfono inválido (ej: 11 2345-6789)';
+      }
+    }
     
     if (shippingMethod === 'envio') {
       if (!street.trim()) tempErrors.street = 'La calle con altura es obligatoria';
@@ -76,48 +105,61 @@ export default function CartDrawer() {
     return Object.keys(tempErrors).length === 0;
   };
 
-  const handleCheckout = (e) => {
+  const handleCheckout = async (e) => {
     e.preventDefault();
+    if (isSubmitting) return;
     if (!validateForm()) return;
 
-    // Get default WhatsApp number
-    const defaultWhatsApp = contactConfig.whatsAppNumbers.find(w => w.isDefault) || contactConfig.whatsAppNumbers[0];
-    
-    // Format product list
-    const itemsText = cart.map(item => {
-      const brandText = item.product.marca ? ` (${item.product.marca})` : '';
-      const subtotal = item.product.precio * item.quantity;
-      return `- ${item.quantity}x ${item.product.nombre}${brandText} - $${item.product.precio.toLocaleString('es-AR')} c/u (Subtotal: $${subtotal.toLocaleString('es-AR')})`;
-    }).join('\n');
+    setIsSubmitting(true);
+    setSubmitError(null);
 
-    // Format address info
-    let addressText = '';
-    if (shippingMethod === 'envio') {
-      addressText = `\nDIRECCION DE ENVIO:\n- Calle y altura: ${street}\n${floor.trim() ? `- Piso: ${floor}\n` : ''}${dept.trim() ? `- Depto: ${dept}\n` : ''}`;
+    try {
+      const payload = {
+        customer: {
+          name: name.trim(),
+          phone: phone.trim()
+        },
+        shipping: {
+          method: shippingMethod,
+          street: shippingMethod === 'envio' ? street.trim() : '',
+          floor: shippingMethod === 'envio' ? floor.trim() : '',
+          department: shippingMethod === 'envio' ? dept.trim() : ''
+        },
+        items: cart.map(item => ({
+          productId: item.product.id,
+          quantity: item.quantity
+        })),
+        idempotencyKey,
+        website
+      };
+
+      const { data, error } = await supabase.functions.invoke('create-order', {
+        body: payload
+      });
+
+      if (error) {
+        throw new Error(error.message || 'Error al procesar el pedido');
+      }
+
+      if (data && data.ok) {
+        setOrderResult(data.order);
+        clearCart();
+        // Reset states
+        setName('');
+        setPhone('');
+        setStreet('');
+        setFloor('');
+        setDept('');
+        setIdempotencyKey('');
+      } else {
+        throw new Error(data?.error || 'Error al guardar el pedido en el servidor');
+      }
+    } catch (err) {
+      console.error('Error in checkout:', err);
+      setSubmitError(err.message || 'Ocurrió un error inesperado al enviar el pedido.');
+    } finally {
+      setIsSubmitting(false);
     }
-
-    // Compose final message without emojis
-    const message = `NUEVO PEDIDO - SUPER MARKET KOSHER
------------------------------------------
-Cliente: ${name}
-Telefono: ${phone}
-Metodo: ${shippingMethod === 'envio' ? 'Envio a Domicilio' : 'Retiro en Sucursal'}
-${addressText}-----------------------------------------
-PRODUCTOS:
-${itemsText}
-
------------------------------------------
-Total a pagar: $${cartTotal.toLocaleString('es-AR')}
------------------------------------------
-Hola! Quiero confirmar este pedido.`;
-
-    const whatsappUrl = getWhatsAppLink(defaultWhatsApp.numberApi, message);
-    
-    // Open in new window
-    window.open(whatsappUrl, '_blank');
-    
-    // Close cart
-    handleClose();
   };
 
   return (
@@ -127,11 +169,11 @@ Hola! Quiero confirmar este pedido.`;
         <div className="cart-drawer-header">
           <div className="cart-header-title">
             <svg className="cart-header-icon-svg" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
-            <h2>Mi Carrito</h2>
-            <span className="cart-badge">{cartCount}</span>
+            <h2>{orderResult ? 'Pedido Recibido' : 'Mi Carrito'}</h2>
+            {!orderResult && <span className="cart-badge">{cartCount}</span>}
           </div>
           <div className="cart-header-actions">
-            {cart.length > 0 && (
+            {!orderResult && cart.length > 0 && (
               <button 
                 type="button" 
                 className="cart-clear-btn" 
@@ -153,7 +195,23 @@ Hola! Quiero confirmar este pedido.`;
 
         {/* Content */}
         <div className="cart-drawer-body">
-          {cart.length === 0 ? (
+          {orderResult ? (
+            <div className="cart-success-view">
+              <svg className="cart-success-icon-svg" xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+              <h3>¡Pedido recibido!</h3>
+              <p className="order-number-display">Número de pedido: <strong>#{orderResult.orderNumber}</strong></p>
+              <p className="order-total-display">Total: <strong>${orderResult.total.toLocaleString('es-AR')}</strong></p>
+              <p className="order-instruction">Nos comunicaremos al teléfono indicado para confirmarlo.</p>
+              <button 
+                type="button" 
+                className="btn btn-primary"
+                onClick={handleClose}
+                style={{ marginTop: '10px', padding: '12px 24px', width: '100%' }}
+              >
+                Entendido
+              </button>
+            </div>
+          ) : cart.length === 0 ? (
             <div className="cart-empty">
               <svg className="cart-empty-icon-svg" xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
               <h3>Tu carrito está vacío</h3>
@@ -226,6 +284,7 @@ Hola! Quiero confirmar este pedido.`;
                               className="qty-btn"
                               onClick={() => handleUpdateQuantity(product.id, item.quantity - 1)}
                               aria-label="Disminuir cantidad"
+                              disabled={isSubmitting}
                             >
                               -
                             </button>
@@ -235,6 +294,7 @@ Hola! Quiero confirmar este pedido.`;
                               className="qty-btn"
                               onClick={() => updateQuantity(product.id, item.quantity + 1)}
                               aria-label="Aumentar cantidad"
+                              disabled={isSubmitting}
                             >
                               +
                             </button>
@@ -246,6 +306,7 @@ Hola! Quiero confirmar este pedido.`;
                             className="cart-item-remove"
                             onClick={() => handleRemoveFromCart(product.id)}
                             aria-label="Eliminar producto"
+                            disabled={isSubmitting}
                           >
                             Eliminar
                           </button>
@@ -260,6 +321,24 @@ Hola! Quiero confirmar este pedido.`;
               <form className="cart-checkout-form" onSubmit={handleCheckout}>
                 <h3>Datos de Entrega</h3>
                 
+                {submitError && (
+                  <div className="checkout-error-message">
+                    {submitError}
+                  </div>
+                )}
+
+                {/* Honeypot hidden input */}
+                <div style={{ display: 'none' }} aria-hidden="true">
+                  <input 
+                    type="text" 
+                    name="website" 
+                    value={website} 
+                    onChange={(e) => setWebsite(e.target.value)} 
+                    tabIndex={-1} 
+                    autoComplete="off" 
+                  />
+                </div>
+
                 <div className="form-group">
                   <label htmlFor="cart-name">Nombre completo *</label>
                   <input 
@@ -269,6 +348,7 @@ Hola! Quiero confirmar este pedido.`;
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     className={errors.name ? 'input-error' : ''}
+                    disabled={isSubmitting}
                   />
                   {errors.name && <span className="error-text">{errors.name}</span>}
                 </div>
@@ -282,6 +362,7 @@ Hola! Quiero confirmar este pedido.`;
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
                     className={errors.phone ? 'input-error' : ''}
+                    disabled={isSubmitting}
                   />
                   {errors.phone && <span className="error-text">{errors.phone}</span>}
                 </div>
@@ -294,6 +375,7 @@ Hola! Quiero confirmar este pedido.`;
                       type="button"
                       className={`method-btn ${shippingMethod === 'retiro' ? 'active' : ''}`}
                       onClick={() => setShippingMethod('retiro')}
+                      disabled={isSubmitting}
                     >
                       <svg className="method-icon-svg" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
                       <span className="method-label">Retiro en Sucursal</span>
@@ -302,6 +384,7 @@ Hola! Quiero confirmar este pedido.`;
                       type="button"
                       className={`method-btn ${shippingMethod === 'envio' ? 'active' : ''}`}
                       onClick={() => setShippingMethod('envio')}
+                      disabled={isSubmitting}
                     >
                       <svg className="method-icon-svg" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>
                       <span className="method-label">Envío a Domicilio</span>
@@ -321,6 +404,7 @@ Hola! Quiero confirmar este pedido.`;
                         value={street}
                         onChange={(e) => setStreet(e.target.value)}
                         className={errors.street ? 'input-error' : ''}
+                        disabled={isSubmitting}
                       />
                       {errors.street && <span className="error-text">{errors.street}</span>}
                     </div>
@@ -334,6 +418,7 @@ Hola! Quiero confirmar este pedido.`;
                           placeholder="Ej: 3"
                           value={floor}
                           onChange={(e) => setFloor(e.target.value)}
+                          disabled={isSubmitting}
                         />
                       </div>
                       <div className="form-group col">
@@ -344,6 +429,7 @@ Hola! Quiero confirmar este pedido.`;
                           placeholder="Ej: B"
                           value={dept}
                           onChange={(e) => setDept(e.target.value)}
+                          disabled={isSubmitting}
                         />
                       </div>
                     </div>
@@ -357,14 +443,23 @@ Hola! Quiero confirmar este pedido.`;
                     <span>${cartTotal.toLocaleString('es-AR')}</span>
                   </div>
                   <div className="summary-row total">
-                    <span>Total estimado</span>
+                    <span>Total</span>
                     <span>${cartTotal.toLocaleString('es-AR')}</span>
                   </div>
                 </div>
 
-                <button type="submit" className="btn-cart-checkout">
-                  <svg viewBox="0 0 448 512" width="18" height="18" fill="currentColor" className="btn-whatsapp-icon-svg" style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '6px' }}><path d="M380.9 97.1C339 55.1 283.2 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L3 480l117.7-30.9c32.4 17.7 68.9 27 106.1 27h.1c122.3 0 224.1-99.6 224.1-222 0-59.3-25.2-115-67.1-157zm-157 341.6c-33.2 0-65.7-8.9-94-25.7l-6.7-4-69.8 18.3L72 359.2l-4.4-7c-18.5-29.4-28.2-63.3-28.2-98.2 0-101.7 82.8-184.5 184.6-184.5 49.3 0 95.6 19.2 130.4 54.1 34.8 34.9 56.2 81.2 56.1 130.5 0 101.8-84.9 184.6-186.6 184.6zm101.2-138.2c-5.5-2.8-32.8-16.2-37.9-18-5.1-1.9-8.8-2.8-12.5 2.8-3.7 5.6-14.3 18-17.6 21.8-3.2 3.7-6.5 4.2-12 1.4-32.6-16.3-54-29.1-75.5-66-5.7-9.8 5.7-9.1 16.3-30.3 1.8-3.7 .9-6.9-.5-9.7-1.4-2.8-12.5-30.1-17.1-41.2-4.5-10.8-9.1-9.3-12.5-9.5-3.2-.2-6.9-.2-10.6-.2-3.7 0-9.7 1.4-14.8 6.9-5.1 5.6-19.4 19-19.4 46.3 0 27.3 19.9 53.7 22.6 57.4 2.8 3.7 39.1 59.7 94.8 83.8 35.2 15.2 49 16.5 66.6 13.9 10.7-1.6 32.8-13.4 37.4-26.4 4.6-13 4.6-24.1 3.2-26.4-1.3-2.5-5-3.9-10.5-6.6z"/></svg>
-                  Confirmar Pedido por WhatsApp
+                <button type="submit" className="btn-cart-checkout" disabled={isSubmitting}>
+                  {isSubmitting ? (
+                    <span>Enviando pedido...</span>
+                  ) : (
+                    <>
+                      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '6px' }}>
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                        <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                      </svg>
+                      Confirmar Pedido
+                    </>
+                  )}
                 </button>
               </form>
             </>

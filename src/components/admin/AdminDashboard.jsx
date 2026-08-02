@@ -24,6 +24,12 @@ export default function AdminDashboard() {
         </div>
         <nav className="sidebar-nav">
           <NavLink 
+            to="/admin/orders" 
+            className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
+          >
+            📋 Pedidos
+          </NavLink>
+          <NavLink 
             to="/admin/products" 
             className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
           >
@@ -34,6 +40,12 @@ export default function AdminDashboard() {
             className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
           >
             🏷️ Categorías
+          </NavLink>
+          <NavLink 
+            to="/admin/push-notifications" 
+            className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
+          >
+            🔔 Notificaciones
           </NavLink>
         </nav>
         <div className="sidebar-footer">

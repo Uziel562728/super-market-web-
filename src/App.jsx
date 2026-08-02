@@ -17,6 +17,9 @@ import AdminProducts from './components/admin/AdminProducts';
 import AdminProductForm from './components/admin/AdminProductForm';
 import AdminCategories from './components/admin/AdminCategories';
 import AdminCategoryForm from './components/admin/AdminCategoryForm';
+import AdminOrders from './components/admin/AdminOrders';
+import AdminOrderDetail from './components/admin/AdminOrderDetail';
+import AdminNotificationSettings from './components/admin/AdminNotificationSettings';
 import ProtectedRoute from './components/admin/ProtectedRoute';
 import { CartProvider } from './context/CartContext';
 import CartDrawer from './components/CartDrawer';
@@ -116,7 +119,10 @@ export default function App() {
 
           {/* Protected Dashboard Routes */}
           <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>}>
-            <Route index element={<Navigate to="/admin/products" replace />} />
+            <Route index element={<Navigate to="/admin/orders" replace />} />
+            <Route path="orders" element={<AdminOrders />} />
+            <Route path="orders/:orderId" element={<AdminOrderDetail />} />
+            <Route path="push-notifications" element={<AdminNotificationSettings />} />
             <Route path="products" element={<AdminProducts />} />
             <Route path="products/new" element={<AdminProductForm />} />
             <Route path="products/edit/:id" element={<AdminProductForm />} />
