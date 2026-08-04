@@ -1,10 +1,12 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
+import { useProductCardPreload } from '../lib/useProductVisibilityObserver';
 
 export default function ProductCard({ product, categories = [] }) {
   const navigate = useNavigate();
   const { cart, addToCart, updateQuantity } = useCart();
+  const { cardRef, handleMouseEnter, handlePointerDown } = useProductCardPreload(product, categories);
   const cartItem = cart.find((item) => item.product.id === product.id);
   const quantity = cartItem ? cartItem.quantity : 0;
   const {
@@ -22,6 +24,10 @@ export default function ProductCard({ product, categories = [] }) {
   const openProduct = () => {
     if (product.slug) {
       sessionStorage.setItem('last_viewed_product_id', product.id);
+      document.documentElement.style.scrollBehavior = 'auto';
+      window.scrollTo(0, 0);
+      document.body.scrollTop = 0;
+      document.documentElement.scrollTop = 0;
       navigate(`/${product.slug}`);
     }
   };
@@ -35,13 +41,15 @@ export default function ProductCard({ product, categories = [] }) {
     ? Math.round(((precio_anterior - precio) / precio_anterior) * 100)
     : 0;
 
-
-
   return (
     <div
+      ref={cardRef}
       id={`product-card-${product.id}`}
       className={`product-card ${product.slug ? 'product-card-clickable' : ''} ${oferta ? 'product-on-sale' : ''} ${!disponible ? 'product-out-of-stock' : ''}`}
       onClick={openProduct}
+      onMouseEnter={handleMouseEnter}
+      onTouchStart={handlePointerDown}
+      onPointerDown={handlePointerDown}
       onKeyDown={(e) => {
         if (product.slug && (e.key === 'Enter' || e.key === ' ')) openProduct();
       }}

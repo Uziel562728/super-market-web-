@@ -12,9 +12,10 @@ export default function ProductGrid({
   searchQuery, 
   onSearchChange 
 }) {
-  const [productsList, setProductsList] = useState([]);
-  const [categoriesList, setCategoriesList] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const initialCache = getCachedCatalog();
+  const [productsList, setProductsList] = useState(() => initialCache ? initialCache.products : []);
+  const [categoriesList, setCategoriesList] = useState(() => initialCache ? initialCache.categories : []);
+  const [loading, setLoading] = useState(() => !initialCache);
   const [onlyOffers, setOnlyOffers] = useState(false);
   const [sortBy, setSortBy] = useState('default');
 
@@ -22,7 +23,7 @@ export default function ProductGrid({
     async function loadCatalog() {
       // Check cache first
       const cached = getCachedCatalog();
-      if (cached) {
+      if (cached && cached.products?.length > 0) {
         setProductsList(cached.products);
         setCategoriesList(cached.categories);
         setLoading(false);

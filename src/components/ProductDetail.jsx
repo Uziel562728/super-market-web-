@@ -1,19 +1,35 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useState } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
-import { supabase } from '../supabaseClient';
 import Header from './Header';
 import Footer from './Footer';
 import { useCart } from '../context/CartContext';
-import { getCachedCatalog } from '../lib/catalogCache';
+import { getCachedProduct, loadProductWithSWR, preloadProductImages } from '../lib/productCache';
 
 export default function ProductDetail() {
   const { slug } = useParams();
-  const [product, setProduct] = useState(null);
-  const [loading, setLoading] = useState(true);
+  
+  // Instant synchronous cache check (0ms latency - no loading flash)
+  const [product, setProduct] = useState(() => getCachedProduct(slug));
+  const [loading, setLoading] = useState(() => !getCachedProduct(slug));
   const [notFound, setNotFound] = useState(false);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const { cart, addToCart, updateQuantity } = useCart();
   const navigate = useNavigate();
+
+  // Instant scroll position reset BEFORE paint (prevents any bottom-to-top scroll animation)
+  useLayoutEffect(() => {
+    const docEl = document.documentElement;
+    const prevScrollBehavior = docEl.style.scrollBehavior;
+    docEl.style.scrollBehavior = 'auto';
+    window.scrollTo(0, 0);
+    document.body.scrollTop = 0;
+    docEl.scrollTop = 0;
+
+    const raf = requestAnimationFrame(() => {
+      docEl.style.scrollBehavior = prevScrollBehavior || '';
+    });
+    return () => cancelAnimationFrame(raf);
+  }, [slug]);
 
   const handleBack = (e) => {
     e.preventDefault();
@@ -25,56 +41,71 @@ export default function ProductDetail() {
   };
 
   useEffect(() => {
-    const loadProduct = async () => {
-      setLoading(true);
-      setNotFound(false);
-      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    setActiveImageIndex(0);
 
-      // Check cache first
-      const cached = getCachedCatalog();
-      if (cached) {
-        const cachedProd = cached.products.find(p => p.slug === slug);
-        if (cachedProd) {
-          const cat = cached.categories.find(c => c.id === cachedProd.categoria_id);
-          const formattedProduct = {
-            ...cachedProd,
-            categories: cat ? { nombre: cat.nombre } : null
-          };
-          setProduct(formattedProduct);
-          setActiveImageIndex(0);
+    let isMounted = true;
+
+    const loadProduct = async () => {
+      // Check if already in memory
+      const syncProduct = getCachedProduct(slug);
+      if (syncProduct) {
+        if (isMounted) {
+          setProduct(syncProduct);
           setLoading(false);
-          // Scroll to top once state updates
-          setTimeout(() => {
-            window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
-          }, 0);
-          return;
+          setNotFound(false);
+        }
+      } else {
+        if (isMounted) {
+          setLoading(true);
+          setNotFound(false);
         }
       }
 
-      const { data, error } = await supabase
-        .from('products')
-        .select('*, categories(nombre)')
-        .eq('slug', slug)
-        .eq('disponible', true)
-        .maybeSingle();
+      try {
+        const { product: loadedProduct } = await loadProductWithSWR(
+          slug,
+          (backgroundUpdatedProduct) => {
+            if (isMounted && backgroundUpdatedProduct) {
+              setProduct(backgroundUpdatedProduct);
+            }
+          }
+        );
 
-      if (error || !data) {
-        if (error) console.error('No se pudo cargar el producto:', error);
-        setProduct(null);
-        setNotFound(true);
-      } else {
-        setProduct(data);
-        setActiveImageIndex(0);
+        if (!isMounted) return;
+
+        if (loadedProduct) {
+          setProduct(loadedProduct);
+          setNotFound(false);
+          // Preload remaining gallery images if any
+          if (Array.isArray(loadedProduct.imagenes_adicionales)) {
+            loadedProduct.imagenes_adicionales.forEach((imgUrl) => {
+              if (imgUrl) preloadProductImages({ imagen_principal: imgUrl });
+            });
+          }
+        } else {
+          setProduct(null);
+          setNotFound(true);
+        }
+      } catch (err) {
+        console.warn('[ProductDetail] Error loading product:', err);
+        if (isMounted) {
+          setProduct((prev) => {
+            if (!prev) setNotFound(true);
+            return prev;
+          });
+        }
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
       }
-
-      setLoading(false);
-      // Ensure we are at the top once the DOM updates with product details
-      setTimeout(() => {
-        window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
-      }, 0);
     };
 
     loadProduct();
+
+    return () => {
+      isMounted = false;
+    };
   }, [slug]);
 
   const pageContent = () => {

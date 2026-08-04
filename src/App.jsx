@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import Header from './components/Header';
 import Hero from './components/Hero';
@@ -24,6 +24,28 @@ import ProtectedRoute from './components/admin/ProtectedRoute';
 import { CartProvider } from './context/CartContext';
 import CartDrawer from './components/CartDrawer';
 import FloatingCartButton from './components/FloatingCartButton';
+
+function ScrollManager() {
+  const location = useLocation();
+
+  useLayoutEffect(() => {
+    const sectionId = new URLSearchParams(location.search).get('section');
+    if (!sectionId) {
+      const docEl = document.documentElement;
+      const prevBehavior = docEl.style.scrollBehavior;
+      docEl.style.scrollBehavior = 'auto';
+      window.scrollTo(0, 0);
+      document.body.scrollTop = 0;
+      docEl.scrollTop = 0;
+      const raf = requestAnimationFrame(() => {
+        docEl.style.scrollBehavior = prevBehavior || '';
+      });
+      return () => cancelAnimationFrame(raf);
+    }
+  }, [location.pathname, location.search]);
+
+  return null;
+}
 
 function PublicLayout() {
   const location = useLocation();
@@ -108,6 +130,7 @@ function PublicLayout() {
 export default function App() {
   return (
     <Router basename={import.meta.env.BASE_URL}>
+      <ScrollManager />
       <CartProvider>
         <Routes>
           {/* Public Website */}
